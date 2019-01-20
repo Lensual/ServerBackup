@@ -7,6 +7,7 @@ linux shell &amp; rsync for server backup
 * 支持排除列表
 * 支持限速
 * rsync备份日志
+* 支持优先级
 
 ## HOW TO
 1. 源服务器与目标服务器安装rsync `apt install rsync`
