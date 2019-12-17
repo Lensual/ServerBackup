@@ -11,7 +11,7 @@ linux shell &amp; rsync for server backup
 
 ## HOW TO
 1. 源服务器与目标服务器安装rsync `apt install rsync`
-2. 目标服务器安装p7zip `apt install p7zip`
+2. 目标服务器安装p7zip `apt install p7zip-full`
 3. 拉取该项目到备份目标服务器 `git clone https://github.com/Lensual/ServerBackup`
 4. 上传源服务器私钥到sshkey
 5. 配置conf/example.conf
