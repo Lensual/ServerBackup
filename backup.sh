@@ -1,9 +1,11 @@
 #!/bin/bash
 function cleanArgs() {
     exclude=""
+    ssh=""
     host=""
     port=""
     user=""
+    passFile=""
     sshKey=""
     srcDir=""
     backupDir=""
@@ -12,6 +14,7 @@ function cleanArgs() {
     option=""
     basename=""
     nice=""
+    srcUrl=""
 }
 
 workdir=$(dirname $0)	#工作路径
@@ -32,19 +35,29 @@ do
 
     #获取配置文件的名字，用这个名字存档
     basename=$(basename $conf)
-    filename=${basename%%.*}
+    filename=${basename%.*}
 
     for e in ${excludeList[@]}
     do
         exclude="$exclude --exclude '$e'"
     done
+    
+    if [ $sshKey ]; then
+        ssh="-e \"ssh -p ${port} -i ${sshKey} -o 'StrictHostKeyChecking no'\""
+        srcUrl="${user}@${host}:${srcDir}"
+    else
+        srcUrl="rsync://${user}@${host}:${port}${srcDir}"
+    fi
+
+    if [ $passFile ]; then
+        passwordFile="--password-file=${passFile}"
+    fi
 
     timestamp=$(date +%Y-%m-%d_%T)
 
     #TODO 并行优化
-	
     #奇怪问题：如果不使用bash单独运行rsync，在脚本中执行会忽略掉排除列表
-    nice -n ${nice} bash -c "rsync $option --delete --bwlimit=${bwlimit} -e \"ssh -p ${port} -i ${sshKey} -o 'StrictHostKeyChecking no'\" ${exclude} ${user}@${host}:${srcDir} ${backupDir}/${filename}/ | tee ${logDir}/${filename}_$timestamp.log"
+    nice -n ${nice} bash -c "rsync $option --delete --bwlimit=${bwlimit} ${rsyncPort} ${ssh} ${passwordFile} ${exclude} ${srcUrl} ${backupDir}/${filename}/ | tee ${logDir}/${filename}_$timestamp.log"
 
     if [ $compType == "7z" ]; then
         nice -n ${nice} bash -c "tar cpf - ${backupDir}/${filename}/ | 7za a -t7z -m0=${p7z_m0} -mx${p7z_mx} -mmt${cpuNum} -si ${backupDir}/${filename}_$timestamp.7z"
