@@ -55,8 +55,11 @@ do
 
     timestamp=$(date +%Y-%m-%d_%T)
 
+    mkdir -p $backupDir
+
     #TODO 并行优化
     #奇怪问题：如果不使用bash单独运行rsync，在脚本中执行会忽略掉排除列表
+    echo "rsync $option --delete --bwlimit=${bwlimit} ${rsyncPort} ${ssh} ${passwordFile} ${exclude} ${srcUrl} ${backupDir}/${filename}/ | tee ${logDir}/${filename}_$timestamp.log"
     nice -n ${nice} bash -c "rsync $option --delete --bwlimit=${bwlimit} ${rsyncPort} ${ssh} ${passwordFile} ${exclude} ${srcUrl} ${backupDir}/${filename}/ | tee ${logDir}/${filename}_$timestamp.log"
 
     if [ $compType == "7z" ]; then
