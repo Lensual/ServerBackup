@@ -1,0 +1,7 @@
+logs/**
+sshkey/**
+!sshkey/example.pass
+!sshkey/example.pem
+conf/**
+!conf/windows.conf.sample
+!conf/linux.conf.sample
